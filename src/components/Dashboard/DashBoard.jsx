@@ -3,7 +3,32 @@ import SideBar from "../SideBar/SideBar";
 import "../../assets/css/dashboard/style.css";
 import "../../assets/vendors/flag-icon-css/css/flag-icon.min.css"
 import ReactApexChart from "react-apexcharts";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
+import SERVER_URL from "../../config/SERVER_URL";
 function DashBoard() {
+  const navigate = useNavigate();
+useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+    axios
+      .get(`${SERVER_URL}/admin/protected`, {
+        headers: { "x-access-token": token },
+      })
+      .then((res) => {
+        if (res.status !== 200) {
+          localStorage.removeItem("token");
+        navigate("/login");
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        navigate("/login");
+      });
+  }, [navigate]);
     const series = [
         {
           name: 'Series 1',

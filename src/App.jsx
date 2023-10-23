@@ -9,6 +9,7 @@ import EditProduct from "./components/EditProduct/EditProduct"
 import AllVariations from "./components/AllVariations/AllVariations"
 import EditVariation from "./components/EditVariation/EditVariation"
 import LoadScriptOnRouteChange from "./config/LoadScriptOnRouteChange"
+import AddCategory from "./components/AddCategory/AddCategory"
 
 
 function App() {
@@ -26,6 +27,8 @@ function App() {
     <Route path="/edit-product/:id" element={<EditProduct/>} />
     <Route path="/all-variations/:id" element={<AllVariations/>} />
     <Route path="/edit-variation/:id" element={<EditVariation/>} />
+    <Route path="/category" element={<AddCategory/>} />
+
      </Routes>
      <LoadScriptOnRouteChange scriptSrc="/src/assets/js/template.js" />
     </>

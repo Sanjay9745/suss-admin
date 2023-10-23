@@ -70,8 +70,8 @@ function EditVariation() {
                       offer_start_date:
                         variationResponse.data.offer_start_date || "",
                       offer_end_date:
-                        variationResponse.data.offer_end_date || 0,
-                      margin: variationResponse.data.offer_end_date || "",
+                        variationResponse.data.offer_end_date || "",
+                      margin: variationResponse.data.margin || "",
                       images: base64Images,
                     };
                     setVariation(updatedVariation);
@@ -131,52 +131,68 @@ function EditVariation() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("name", variation.name);
-    formData.append("gender", variation.gender);
-    formData.append("slug", variation.slug);
-    formData.append("description", variation.description);
-    formData.append("categoryId", variation.category);
+    formData.append("price", variation.price);
+    formData.append("stock", variation.stock);
+    formData.append("size", variation.size);
+    formData.append("color", variation.color);
     formData.append("variationId", id);
+    formData.append("weight", variation.weight);
+    formData.append("dimension[x]", variation.dimension.x);
+    formData.append("dimension[y]", variation.dimension.y);
+    formData.append("dimension[z]", variation.dimension.z);
+    formData.append("offer_price", variation.offer_price);
+    formData.append("offer_start_date", variation.offer_start_date);
+    formData.append("offer_end_date", variation.offer_end_date);
+    formData.append("margin", variation.margin);
+    if (variation?.images?.length !== 0) {
+      for (let i = 0; i < variation?.images?.length; i++) {
+        fetch(variation.images[i])
+          .then((res) => res.blob())
+          .then((blob) => {
+            const file = new File([blob], `image_${i}.png`, {
+              type: "image/png",
+            });
+            formData.append("images", file);
 
-    for (let i = 0; i < variation.images.length; i++) {
-      fetch(variation.images[i])
-        .then((res) => res.blob())
-        .then((blob) => {
-          const file = new File([blob], `image_${i}.png`, {
-            type: "image/png",
+            // Check if all images have been appended before making the POST request
+            if (i === variation.images.length - 1) {
+              axios
+                .post(`${SERVER_URL}/admin/update-variation`, formData, {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                    "x-access-token": localStorage.getItem("token"),
+                  },
+                })
+                .then((res) => {
+                  if (res.status === 200) {
+                    setVariation({
+                      stock: "",
+                      size: "",
+                      color: "",
+                      weight: 0,
+                      dimension: {
+                        x: "",
+                        y: "",
+                        z: "",
+                      },
+                      offer_price: 0,
+                      offer_start_date: "",
+                      offer_end_date: "",
+                      margin: "",
+                    });
+
+                    console.log("variation updated successfully");
+                  }
+                })
+                .catch((err) => {
+                  console.log(err.response.data);
+                });
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching the image data:", error);
           });
-          formData.append("images", file);
-
-          // Check if all images have been appended before making the POST request
-          if (i === variation.images.length - 1) {
-            axios
-              .post(`${SERVER_URL}/admin/update-variation`, formData, {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                  "x-access-token": localStorage.getItem("token"),
-                },
-              })
-              .then((res) => {
-                if (res.status === 200) {
-                  setVariation({
-                    name: "",
-                    gender: "",
-                    slug: "",
-                    categoryId: "",
-                    description: "",
-                    images: [],
-                  });
-                  console.log("variation updated successfully");
-                }
-              })
-              .catch((err) => {
-                console.log(err.response.data);
-              });
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching the image data:", error);
-        });
+      }
     }
   };
 
@@ -239,8 +255,6 @@ function EditVariation() {
                         />
                       </div>
 
-                  
-
                       <div className="mb-3">
                         <label htmlFor="size" className="form-label">
                           Size
@@ -289,9 +303,40 @@ function EditVariation() {
                           onChange={handleChange}
                         />
                       </div>
+                      <div className="mb-3">
+                        <label
+                          htmlFor="offer_start_date"
+                          className="form-label"
+                        >
+                          Offer Start Date
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          id="offer_start_date"
+                          autoComplete="off"
+                          placeholder="offer_start_date"
+                          name="offer_start_date"
+                          value={variation.offer_start_date}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="offer_end_date" className="form-label">
+                          Offer End Date
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          id="offer_end_date"
+                          autoComplete="off"
+                          placeholder="offer_end_date"
+                          name="offer_end_date"
+                          value={variation.offer_end_date}
+                          onChange={handleChange}
+                        />
+                      </div>
 
-                   
-                      
                       <div className="mb-3">
                         <label className="form-label">variation Images</label>
                         <label className="custum-file-upload" htmlFor="file">

@@ -44,6 +44,12 @@ function SideBar() {
               <span className="link-title">All Products</span>
             </Link>
           </li>
+          <li className="nav-item">
+            <Link to="/category" className="nav-link">
+              <i className="link-icon" data-feather="box" />
+              <span className="link-title">Categories</span>
+            </Link>
+          </li>
        
     
         </ul>
